@@ -8,11 +8,11 @@ const {Server} = require("socket.io");
 
 const { addUser, removeUser, getUser, getUsersInRoom } = require('./users');
 
-const router = require('./router');
+// const router = require('./router');
 
 
 app.use(cors())
-app.use(router);
+// app.use(router);
 
 
 const server = http.createServer(app)
@@ -26,13 +26,10 @@ const io = new Server(server, {
 
 io.on('connection',(socket)=> {
     console.log(`User Connected ${socket.id}`)
-    
     socket.on('send-message', (messagee) =>{
         console.log(messagee);
+        
         io.emit('resived-message', messagee)
-        
-        
-        
     })
     
     socket.on('join', ({ name, room }) => {
@@ -46,18 +43,18 @@ io.on('connection',(socket)=> {
     socket.emit('resived-message', { user: 'admin', message: `${user.name}, welcome to room ${user.room}.`});
     socket.broadcast.to(user.room).emit('resived-message', { user: 'admin', message: `${user.name} has joined!` });
 
+    
+    // callback();
+});
+
+//     socket.on('sendMessage', (message, callback) => {
+    //     const user = getUser(socket.id);
+    
+    // io.to(user.room).emit('message', { user: user.name, text: message });
     // io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room) });
 
-    // callback();
-  });
-
-    socket.on('sendMessage', (message, callback) => {
-    const user = getUser(socket.id);
-
-    io.to(user.room).emit('message', { user: user.name, text: message });
-
-    callback();
-  });
+//     callback();
+//   });
 
     socket.on('disconnect',()=> {
         console.log('user disconnected');
